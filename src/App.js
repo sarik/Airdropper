@@ -1116,10 +1116,46 @@ function App() {
   }, []);
 
   useEffect(() => {
+    window.ethereum.on("disconnect", (accounts) => {
+      alert("disconnected");
+    });
+    window.ethereum.on("accountsChanged", (accounts) => {
+      alert("accountsChanged");
+      window.ethereum.request({ method: "eth_accounts" }).then((accounts) => {
+        if (accounts.length === 0) {
+          console.log("Metamask is Disconnected");
+        } else {
+          setAccount(accounts[0]);
+          console.log("Metamask is Connected");
+        }
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     const ethereumButton = document.querySelector(".enableEthereumButton");
     ethereumButton.addEventListener("click", () => {
       //Will Start the metamask extension
-      window.ethereum.request({ method: "eth_requestAccounts" });
+      window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then((acc) => {
+          alert("connected account", acc);
+          setAccount(acc);
+        })
+        .catch(() => alert("you rejected"));
+    });
+  }, []);
+
+  useEffect(() => {
+    const ethereumButton = document.querySelector(".checkconnected");
+    ethereumButton.addEventListener("click", () => {
+      window.ethereum.request({ method: "eth_accounts" }).then((accounts) => {
+        if (accounts.length === 0) {
+          console.log("Metamask is Disconnected");
+        } else {
+          console.log("Metamask is Connected");
+        }
+      });
     });
   }, []);
 
@@ -1127,7 +1163,7 @@ function App() {
     accounts = await ethereum.request({ method: 'eth_requestAccounts' });
   }*/
 
-  useEffect(() => {
+  /*  useEffect(() => {
     const ethereumButton = buttonEl.current;
     ethereumButton.addEventListener("click", () => {
       //Will Start the metamask extension
@@ -1142,7 +1178,7 @@ function App() {
     if (window.ethereum.selectedAddress && web3.currentProvider.isMetaMask) {
       currentAccount.current = window.ethereum.selectedAddress;
     }
-  }, []);
+  }, []);*/
 
   /* useEffect(() => {
     const sendEthButton = document.querySelector(".sendEthButton");
@@ -1286,7 +1322,10 @@ function App() {
   if (loading) return <div>Loading...</div>;
   return (
     <div className="App">
+      Account:{account}
+      <br />
       <input type="file" id="input" />
+      <button className="checkconnected">Check connected</button>
       <button className="enableEthereumButton">Connect to metmask</button>
       <button onClick={() => airdrop()}>Airdrop</button>
       <button onClick={() => approve()}>Approve</button>
