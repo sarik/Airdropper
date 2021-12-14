@@ -1,0 +1,13 @@
+Done
+********
+Create airdropper contract
+write excel utility to read 255 entries at a time - done FE
+create transaction for each of the 255 entries - done FE.NOTE:Only 255 addresses can be dropped to at a time
+track the no of users remaining in case of failure in between the drops - Task for BE
+
+To do
+**************
+transfer tokens to dev account
+Dev approves airdropper contract to airdrop token
+Deploy all contracts on mainnnet
+

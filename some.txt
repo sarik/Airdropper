@@ -1,0 +1,98 @@
+if address unlocked 2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe
+ss.eth.personal.sign("hi","0x24096E225d57965239017Ede2186282dE3FaAb68")
+
+https://ethereum.stackexchange.com/questions/73683/can-anybody-point-out-the-difference-between-web3-eth-sendtransaction-and-web3-e
+
+async function send(web3, transaction) {
+    while (true) {
+        try {
+            const options = {
+                to   : transaction._parent._address,
+                data : transaction.encodeABI(),
+                gas  : (await web3.eth.getBlock("latest")).gasLimit
+            };
+            const signed  = await web3.eth.accounts.signTransaction(options, PRIVATE_KEY);
+            const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction);
+            return transactionReceipt;
+        }
+        catch (error) {
+            console.log(error.message);
+            console.log("Press enter to try again...");
+            await new Promise(function(resolve, reject) {
+                process.stdin.resume();
+                process.stdin.once("data", function(data) {
+                    process.stdin.pause();
+                    resolve();
+                });
+            });
+        }
+    }
+}
+
+
+signTransaction will sign a transaction but it will not send it, returning an hexadecimal string with the signed transaction instead. You can use sendSignedTransaction to send it to the network.
+sendTransaction will sign and send the transaction to the network.
+
+
+Sending transactions
+https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#sendtransaction
+
+//sendTransaction Sends a transaction to the network.
+The from property can also be an address or index from the web3.eth.accounts.wallet.
+It will then sign locally using the private key of that account(since already unlocked), 
+and send the transaction via web3.eth.sendSignedTransaction().
+
+//Send transaction via metamask.It will automatically sign it using the account private key
+//The from address must be unlocked
+ss=new Web3(window.ethereum)  
+ss.eth.sendTransaction({nonce:33,from:window.ethereum.selectedAddress,data:"",to:"0x265F4aA6fA5E8FB9B76fe465C4D1E00FFE167d22"})
+
+or
+const transactionParameters = {
+  nonce: '0x00', // ignored by MetaMask
+  gasPrice: '0x09184e72a000', // customizable by user during MetaMask confirmation.
+  gas: '0x2710', // customizable by user during MetaMask confirmation.
+  to: '0x0000000000000000000000000000000000000000', // Required except during contract publications.
+  from: ethereum.selectedAddress, // must match user's active address.
+  value: '0x00', // Only required to send ether to the recipient from the initiating external account.
+  data:
+    '0x7f7465737432000000000000000000000000000000000000000000000000000000600057', // Optional, but used for defining smart contract creation and interaction.
+  chainId: '0x3', // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
+};
+undefined
+const txHash = await ethereum.request({
+  method: 'eth_sendTransaction',
+  params: [transactionParameters],
+});
+
+No node? eth.accounts.sign
+Node with unlocked account? eth.sign
+Node with locked account? eth.personal.sign
+
+
+//Sending transaction metamask
+https://docs.metamask.io/guide/sending-transactions.html
+
+//See here
+https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-call
+
+ss=new webbb(window.ethereum) 
+var myContract = new ss.eth.Contract(abi, '0x51f0f4b47bedEe29d947249F762a3Ac97091EC1E', {
+    from: ethereum.selectedAddress, // default from address
+    gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+});
+//Calling method
+myContract.methods.myMethod([param1[, param2[, ...]]]).call(options [, defaultBlock] [, callback])
+
+myContract.methods.getLength().call()
+.then(console.log);
+
+myContract.methods.getElement(2).call()
+.then(console.log);
+
+//Change the state
+myContract.methods.addElement(42).send()
+//
+myContract.methods.addElement(42).send({from: ethereum.selectedAddress})
+
+myContract.methods.addElement(42).send({from: "0x24096e225d57965239017ede2186282de3faab68"})
